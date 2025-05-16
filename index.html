@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Love You Riddhi</title>
+    <style>
+ /* General Styling */
+body  {
+            text-align: center;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #f0f0f0;
+            font-family: 'Poppins', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 20px; /* Moved content slightly up */
+        }
+
+        h1 {
+            font-size: 32px;
+            text-transform: cammelcase;
+            letter-spacing: 2px;
+            color: #00f4ff;
+            text-shadow: 0px 0px 10px #00f4ff, 0px 0px 20px #00f4ff;
+            margin-bottom: 5px; /* Reduced margin to move it up */
+        }
+
+p {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #f8f8f8;
+}
+
+/* Game Canvas */
+.canvas-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 50px; /* Added more space for compliments */
+        }
+
+        canvas {
+            background: #0a0a0a;
+            display: block;
+            border: 3px solid #00f4ff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 244, 255, 0.7);
+        }
+/* Game Over Text */
+.game-over {
+    font-size: 26px;
+    font-weight: bold;
+    color: #191970;
+    text-shadow: 0px 0px 15px #A6E3E9;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+ /* Compliment Bubbles */
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            color: #16213e;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0px 0px 15px rgba(100, 12, 120, 0.7);
+            animation: fadeInOut 3s ease-in-out;
+            white-space: nowrap;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.8); }
+            20% { opacity: 1; transform: scale(1); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.2); }
+        }
+
+  .final-message {
+        font-size: 28px;
+        font-weight: bold;
+        color: #ffcc00;
+        text-shadow: 0px 0px 15px #A6E3E9, 0px 0px 25px rgba(100, 150, 255, 0.7);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        padding: 20px 30px;
+        background: rgba(220, 220, 235, 0.8);
+        border-radius: 15px;
+        border: 3px solid #ffcc00;
+        box-shadow: 0px 0px 30px rgba(255, 204, 0, 0.7);
+        animation: fadeInScale 1.2s ease-out;
+    }
+
+    @keyframes fadeInScale {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+.game-over.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Restart Button */
+.restart-btn {
+    position: absolute;
+    top: 55%; /* Adjusted to be centered below Game Over text */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    padding: 12px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff4b4b, #ff0066);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(255, 75, 75, 0.6);
+    transition: all 0.3s ease-in-out;
+}
+
+.restart-btn:hover {
+    background: linear-gradient(135deg, #ff0066, #ff4b4b);
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0px 6px 15px rgba(255, 75, 75, 0.8);
+}
+    </style>
+</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game to discover why you should Love me !!!</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        canvas {
+            background: #eee;
+            display: block;
+            margin: 10px auto;
+        }
+        .game-over, .final-message {
+            display: none;
+            font-size: 20px;
+            font-weight: bold;
+            color: red;
+        }
+        .restart-btn {
+            display: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game to discover why you should Love me !!!</h1>
+    <p>Score: <span id="score">0</span></p>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <p class="game-over" id="gameOverText">Game Over! Click Restart to Play Again</p>
+    <p class="final-message" id="finalMessage">Thank you for coming into my life and making me the luckiest person in the world 🌍❤️. I would not disappoint you anymore. Please come back to me. 🥺</p>
+    <button class="restart-btn" id="restartButton">Restart Game</button>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const gameOverText = document.getElementById("gameOverText");
+        const restartButton = document.getElementById("restartButton");
+        const scoreDisplay = document.getElementById("score");
+        const finalMessage = document.getElementById("finalMessage");
+ const compliments = [
+        "I'm good looking boy 🙃 ", "I'm Smart 😎!!", "I'll Never give up on Us 😊", "I'll Love you so much that you'll forget everything else 🤗", "I'll Support your dreams 💭", 
+        "I have good sense of humour 😁", "I'm Loyal to you 🤝", "I'm Caring ❤️‍🩹", "I'm Confident 💯", "I am Ambitious 🚀"
+    ];
+    let bricksBroken = 0;
+        let balls, paddleX, score, bricks, gameOver;
+        const ballRadius = 10;
+        let paddleWidth = 100;
+        let paddleHeight = 10;
+        let paddleSpeed = 10;
+        let rightPressed = false;
+        let leftPressed = false;
+
+        const brickRowCount = 5;
+        const brickColumnCount = 8;
+        const brickWidth = 60;
+        const brickHeight = 20;
+        const brickPadding = 10;
+        const brickOffsetTop = 30;
+        const brickOffsetLeft = 30;
+function showCompliment() {
+        const complimentText = compliments[Math.floor(bricksBroken / 4) % compliments.length];
+        const bubble = document.createElement("div");
+        bubble.classList.add("bubble");
+        bubble.textContent = complimentText;
+        document.body.appendChild(bubble);
+        
+        const xPos = Math.random() * (window.innerWidth - 150);
+        const yPos = Math.random() * (window.innerHeight - 150);
+        bubble.style.left = `${xPos}px`;
+        bubble.style.top = `${yPos}px`;
+        
+        setTimeout(() => {
+            bubble.remove();
+        }, 3000);
+    }
+
+        function resetGame() {
+            balls = [{ x: canvas.width / 2, y: canvas.height - 30, speedX: 4, speedY: -4 }];
+            paddleX = (canvas.width - paddleWidth) / 2;
+            score = 0;
+            gameOver = false;
+            scoreDisplay.textContent = score;
+            gameOverText.style.display = "none";
+            finalMessage.style.display = "none";
+            restartButton.style.display = "none";
+
+            bricks = [];
+            for (let c = 0; c < brickColumnCount; c++) {
+                bricks[c] = [];
+                for (let r = 0; r < brickRowCount; r++) {
+                    bricks[c][r] = { 
+                        x: c * (brickWidth + brickPadding) + brickOffsetLeft, 
+                        y: r * (brickHeight + brickPadding) + brickOffsetTop, 
+                        status: 1 
+                    };
+                }
+            }
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowRight") rightPressed = true;
+            if (e.key === "ArrowLeft") leftPressed = true;
+        });
+
+        document.addEventListener("keyup", (e) => {
+            if (e.key === "ArrowRight") rightPressed = false;
+            if (e.key === "ArrowLeft") leftPressed = false;
+        });
+
+        function drawBalls() {
+            balls.forEach(ball => {
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
+                ctx.fillStyle = "red";
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "blue";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    if (bricks[c][r].status === 1) {
+                        ctx.beginPath();
+                        ctx.rect(bricks[c][r].x, bricks[c][r].y, brickWidth, brickHeight);
+                        ctx.fillStyle = "green";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+
+        function updateBalls() {
+            if (gameOver) return;
+
+            balls.forEach((ball, index) => {
+                ball.x += ball.speedX;
+                ball.y += ball.speedY;
+
+                if (ball.x + ballRadius > canvas.width || ball.x - ballRadius < 0) {
+                    ball.speedX = -ball.speedX;
+                }
+                if (ball.y - ballRadius < 0) {
+                    ball.speedY = -ball.speedY;
+                }
+
+                if (
+                    ball.y + ballRadius > canvas.height - paddleHeight &&
+                    ball.x > paddleX &&
+                    ball.x < paddleX + paddleWidth
+                ) {
+                    ball.speedY = -ball.speedY;
+                }
+
+                if (ball.y > canvas.height) {
+                    balls.splice(index, 1);
+                }
+            });
+
+            if (balls.length === 0) {
+                gameOver = true;
+                gameOverText.style.display = "block";
+                restartButton.style.display = "block";
+            }
+        }
+
+        function updatePaddle() {
+            if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                paddleX += paddleSpeed;
+            }
+            if (leftPressed && paddleX > 0) {
+                paddleX -= paddleSpeed;
+            }
+        }
+
+  function collisionDetection() {
+        balls.forEach(ball => {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    let brick = bricks[c][r];
+                    if (brick.status === 1) {
+                        if (
+                            ball.x > brick.x &&
+                            ball.x < brick.x + brickWidth &&
+                            ball.y > brick.y &&
+                            ball.y < brick.y + brickHeight
+                        ) {
+                            ball.speedY = -ball.speedY;
+                            brick.status = 0;
+                            score++;
+                            bricksBroken++;
+                            scoreDisplay.textContent = score;
+                            
+                            if (bricksBroken % 5 === 0) {
+                                showCompliment();
+                            }
+                            
+                            if (score >= 40) {
+                                endGame();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+      function endGame() {
+        gameOver = true;
+        finalMessage.textContent = "Thank you for coming into my life and making me the luckiest person in the world 🌍❤️!!! I would not disappoint you anymore. Please come back to me. 🥺";
+        finalMessage.style.display = "block";
+    }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            drawBalls();
+            drawPaddle();
+            updateBalls();
+            updatePaddle();
+            collisionDetection();
+
+            if (!gameOver) {
+                requestAnimationFrame(draw);
+            }
+        }
+
+        restartButton.addEventListener("click", () => {
+            resetGame();
+            draw();
+        });
+
+        resetGame();
+        draw();
+    </script>
+</body>
+</html>
